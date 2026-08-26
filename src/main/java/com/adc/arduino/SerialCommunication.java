@@ -7,6 +7,12 @@ import java.io.OutputStream;
 
 
 /**
+ * ESP32 PLC 58 troubleshooting
+ * https://www.industrialshields.com/blog/arduino-industrial-1/esp32-based-plc-with-windows-macintosh-troubleshooting-363
+ * 
+ * Need the CP210x Universal Windows Driver
+ * 	https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads
+ * 
  * https://github.com/Fazecast/jSerialComm/wiki/Usage-Examples
  * 
  * @author Alex Vazquez <vazqueza2000@gmail.com>
@@ -65,9 +71,9 @@ public class SerialCommunication {
 
 				byte[] readBuffer = new byte[comPort.bytesAvailable()];
 				int numRead = comPort.readBytes(readBuffer, readBuffer.length);
-				System.out.println("Read " + numRead + " bytes.");
+				//System.out.println("Read " + numRead + " bytes.");
 				String response = new String(readBuffer, 0, numRead);
-				System.out.println("Received: '" + response + "'");
+				System.out.print(response);
 
 			}
 			//
