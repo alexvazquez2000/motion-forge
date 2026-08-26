@@ -44,7 +44,9 @@ public class SerialCommunication {
 
 		// Set read timeout logic (semi-blocking)
 		//comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000, 0);
-		comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 10000, 1000);
+		//comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 10000, 1000);
+		//Nonblocking is the default and not necessary, unless we already had a different mode enabled
+		//comPort.setComPortTimeouts(SerialPort.TIMEOUT_NONBLOCKING, 0, 0);
 		
 		// 4. Use Input/Output Streams to transfer data
 		try (InputStream in = comPort.getInputStream();
@@ -55,14 +57,27 @@ public class SerialCommunication {
 //			out.write(greeting.getBytes());
 //			out.flush();
 //			System.out.println("Sent: " + greeting.trim());
+//
+			while (true) {
+				
+				while (comPort.bytesAvailable() == 0)
+					Thread.sleep(20);
 
-			// Read response data
-			byte[] readBuffer = new byte[1024];
-			int numRead = in.read(readBuffer);
-			if (numRead > 0) {
+				byte[] readBuffer = new byte[comPort.bytesAvailable()];
+				int numRead = comPort.readBytes(readBuffer, readBuffer.length);
+				System.out.println("Read " + numRead + " bytes.");
 				String response = new String(readBuffer, 0, numRead);
-				System.out.println("Received: " + response.trim());
+				System.out.println("Received: '" + response + "'");
+
 			}
+			//
+//			// Read response data
+//			byte[] readBuffer = new byte[1024];
+//			int numRead = in.read(readBuffer);
+//			if (numRead > 0) {
+//				String response = new String(readBuffer, 0, numRead);
+//				System.out.println("Received: " + response.trim());
+//			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
