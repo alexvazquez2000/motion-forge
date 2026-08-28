@@ -17,6 +17,8 @@ import java.io.OutputStream;
  * 
  * @author Alex Vazquez <vazqueza2000@gmail.com>
  */
+//Suppress infinite loop warning
+@SuppressWarnings({"java:S2189"})
 public class SerialCommunication {
 	public static void main(String[] args) {
 		// 1. List and select available COM ports
@@ -35,7 +37,7 @@ public class SerialCommunication {
 		SerialPort comPort = ports[0];
 
 		// 2. Configure port parameters
-		comPort.setBaudRate(9600);
+		comPort.setBaudRate(115200);
 		comPort.setNumDataBits(8);
 		comPort.setNumStopBits(SerialPort.ONE_STOP_BIT);
 		comPort.setParity(SerialPort.NO_PARITY);
