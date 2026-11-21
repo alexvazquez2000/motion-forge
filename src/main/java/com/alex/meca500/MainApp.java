@@ -91,13 +91,13 @@ public class MainApp {
 			world.getTransforms().add(new Rotate(180, Rotate.Y_AXIS));
 
 			RobotPart[] parts = new RobotPart[7];
-			parts[0] = new RobotPart(STLLoader.load("/Link0_base.stl"));
-			parts[1] = new RobotPart(STLLoader.load("/Link1.stl"));
-			parts[2] = new RobotPart(STLLoader.load("/Link2.stl"));
-			parts[3] = new RobotPart(STLLoader.load("/Link3.stl"));
-			parts[4] = new RobotPart(STLLoader.load("/Link4.stl"));
-			parts[5] = new RobotPart(STLLoader.load("/Link5.stl"));
-			parts[6] = new RobotPart(STLLoader.load("/Link6_flange.stl"));
+			parts[0] = new RobotPart(STLLoader.load("/Meca500/Link0_base.stl"));
+			parts[1] = new RobotPart(STLLoader.load("/Meca500/Link1.stl"));
+			parts[2] = new RobotPart(STLLoader.load("/Meca500/Link2.stl"));
+			parts[3] = new RobotPart(STLLoader.load("/Meca500/Link3.stl"));
+			parts[4] = new RobotPart(STLLoader.load("/Meca500/Link4.stl"));
+			parts[5] = new RobotPart(STLLoader.load("/Meca500/Link5.stl"));
+			parts[6] = new RobotPart(STLLoader.load("/Meca500/Link6_flange.stl"));
 
 			String[] names = {"link0_base","link1","link2","link3","link4","link5","link6_flange"};
 			for (int i = 0; i < parts.length; i++) printBounds(names[i], parts[i].getMesh());
