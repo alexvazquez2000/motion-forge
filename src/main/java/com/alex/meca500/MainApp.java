@@ -90,19 +90,7 @@ public class MainApp {
 			// STLs are in STEP assembly frame (Y-up). Flip to JavaFX Y-down.
 			world.getTransforms().add(new Rotate(180, Rotate.Y_AXIS));
 
-			RobotPart[] parts = new RobotPart[7];
-			parts[0] = new RobotPart(STLLoader.load("/Meca500/Link0_base.stl"));
-			parts[1] = new RobotPart(STLLoader.load("/Meca500/Link1.stl"));
-			parts[2] = new RobotPart(STLLoader.load("/Meca500/Link2.stl"));
-			parts[3] = new RobotPart(STLLoader.load("/Meca500/Link3.stl"));
-			parts[4] = new RobotPart(STLLoader.load("/Meca500/Link4.stl"));
-			parts[5] = new RobotPart(STLLoader.load("/Meca500/Link5.stl"));
-			parts[6] = new RobotPart(STLLoader.load("/Meca500/Link6_flange.stl"));
-
-			String[] names = {"link0_base","link1","link2","link3","link4","link5","link6_flange"};
-			for (int i = 0; i < parts.length; i++) printBounds(names[i], parts[i].getMesh());
-
-			robot = new Meca500(parts);
+			robot = new Meca500();
 			world.getChildren().add(robot.getNode());
 
 			PointLight light = new PointLight();
@@ -325,11 +313,15 @@ public class MainApp {
 			}
 		}
 
-		private static void printBounds(String name, MeshView meshView) {
+		public static void printBounds(String name, MeshView meshView) {
 			TriangleMesh mesh = (TriangleMesh) meshView.getMesh();
 			float[] pts = mesh.getPoints().toArray(null);
-			float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE, minZ = Float.MAX_VALUE;
-			float maxX = -Float.MAX_VALUE, maxY = -Float.MAX_VALUE, maxZ = -Float.MAX_VALUE;
+			float minX = Float.MAX_VALUE;
+			float minY = Float.MAX_VALUE;
+			float minZ = Float.MAX_VALUE;
+			float maxX = -Float.MAX_VALUE;
+			float maxY = -Float.MAX_VALUE;
+			float maxZ = -Float.MAX_VALUE;
 			for (int i = 0; i < pts.length; i += 3) {
 				minX = Math.min(minX, pts[i]);   maxX = Math.max(maxX, pts[i]);
 				minY = Math.min(minY, pts[i+1]); maxY = Math.max(maxY, pts[i+1]);

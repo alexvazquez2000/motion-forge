@@ -1,5 +1,6 @@
 package com.alex.meca500;
 
+import com.alex.meca500.MainApp.MainFxApp;
 import com.alex.meca500.kinematics.DHParameter;
 import com.alex.meca500.kinematics.KinematicsModel;
 
@@ -50,7 +51,19 @@ public class Meca500 implements KinematicsModel {
 	private RobotPart[] joints = new RobotPart[6];
 	private Group root = new Group();
 
-	public Meca500(RobotPart[] parts) {
+
+	public Meca500() {
+		RobotPart[] parts = new RobotPart[7];
+		parts[0] = new RobotPart(STLLoader.load("/Meca500/Link0_base.stl"));
+		parts[1] = new RobotPart(STLLoader.load("/Meca500/Link1.stl"));
+		parts[2] = new RobotPart(STLLoader.load("/Meca500/Link2.stl"));
+		parts[3] = new RobotPart(STLLoader.load("/Meca500/Link3.stl"));
+		parts[4] = new RobotPart(STLLoader.load("/Meca500/Link4.stl"));
+		parts[5] = new RobotPart(STLLoader.load("/Meca500/Link5.stl"));
+		parts[6] = new RobotPart(STLLoader.load("/Meca500/Link6_flange.stl"));
+
+		String[] names = {"link0_base","link1","link2","link3","link4","link5","link6_flange"};
+		for (int i = 0; i < parts.length; i++) MainFxApp.printBounds(names[i], parts[i].getMesh());
 
 		// --- Joint parameters: (axis, pivotX, pivotY, pivotZ) ---
 		// Pivots are in STEP assembly world coordinates (mm, Y-up).
