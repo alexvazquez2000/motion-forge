@@ -105,7 +105,7 @@ public class MainApp {
 			PerspectiveCamera cam = new PerspectiveCamera(true);
 			cam.setNearClip(0.1);
 			cam.setFarClip(10000);
-			cam.setTranslateZ(-1000);
+			cam.setTranslateZ(-5000);
 
 			SubScene subScene = new SubScene(world, 800, 600, true, SceneAntialiasing.BALANCED);
 			subScene.setCamera(cam);
@@ -139,7 +139,9 @@ public class MainApp {
 			applyTcpPoseToSliders(initPose);
 			updatingFromCode = false;
 
-			VBox root = new VBox(overlay, bottomPanel);
+			HBox zoomRow = buildZoomRow(cam);
+
+			VBox root = new VBox(overlay, bottomPanel, zoomRow);
 			Scene scene = new Scene(root, 900, 800);
 
 			stage.setTitle("Meca500 Simulator");
@@ -283,6 +285,30 @@ public class MainApp {
 			return new TcpPose(
 					tcpSliders[0].getValue(), tcpSliders[1].getValue(), tcpSliders[2].getValue(),
 					tcpSliders[3].getValue(), tcpSliders[4].getValue(), tcpSliders[5].getValue());
+		}
+
+		// ------------------------------------------------------------------ //
+		//  Zoom row (camera distance along -Z)                                //
+		// ------------------------------------------------------------------ //
+		private static final double ZOOM_MIN = 100;
+		private static final double ZOOM_MAX = 6000;
+
+		private HBox buildZoomRow(PerspectiveCamera cam) {
+			// Slider shows distance from the origin; camera sits at z = -distance.
+			Slider s = makeSlider(ZOOM_MIN, ZOOM_MAX, -cam.getTranslateZ(), 500, 4);
+			TextField tf = makeTextField();
+			tf.setText(String.format("%.0f", s.getValue()));
+
+			cam.translateZProperty().bind(s.valueProperty().negate());
+			s.valueProperty().addListener((obs, oldV, newV) ->
+					tf.setText(String.format("%.0f", newV.doubleValue())));
+			tf.setOnAction(e -> setSliderFromField(tf, s));
+
+			HBox row = new HBox(8, new Label("Zoom (camera distance, mm)"), s, tf);
+			HBox.setHgrow(s, Priority.ALWAYS);
+			row.setAlignment(Pos.CENTER_LEFT);
+			row.setPadding(new Insets(4, 8, 8, 8));
+			return row;
 		}
 
 		private static Slider makeSlider(double min, double max, double val,
