@@ -49,7 +49,8 @@ public class MainApp {
 
 	public static class MainFxApp extends Application {
 
-		private Meca500 robot;
+		//private Meca500 robot;
+		private UR10g1750 robot;
 
 		// Sliders and text fields for joint angles
 		private final Slider[]    jointSliders = new Slider[6];
@@ -90,7 +91,8 @@ public class MainApp {
 			// STLs are in STEP assembly frame (Y-up). Flip to JavaFX Y-down.
 			world.getTransforms().add(new Rotate(180, Rotate.Y_AXIS));
 
-			robot = new Meca500();
+			//robot = new Meca500();
+			robot = new UR10g1750();
 			world.getChildren().add(robot.getNode());
 
 			PointLight light = new PointLight();
