@@ -2,7 +2,10 @@ package com.alex.meca500;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.prefs.Preferences;
 
 import com.sun.net.httpserver.HttpServer;
 
@@ -14,12 +17,14 @@ import com.alex.meca500.kinematics.TcpPose;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -49,8 +54,20 @@ public class MainApp {
 
 	public static class MainFxApp extends Application {
 
-		//private Meca500 robot;
-		private UR10g1750 robot;
+		private static final String PREF_ROBOT = "robot";
+		private final Preferences prefs = Preferences.userNodeForPackage(MainApp.class);
+
+		private RobotModel robot;
+		private RobotType robotType;
+		// Robots already built this session, so switching back does not reload STLs
+		private final Map<RobotType, RobotModel> robotCache = new EnumMap<>(RobotType.class);
+		// Holds the current robot's node inside the world group
+		private final Group robotHolder = new Group();
+
+		private Stage stage;
+		private Slider zoomSlider;
+		private ComboBox<RobotType> robotCombo;
+		private Label robotLoadingLabel;
 
 		// Sliders and text fields for joint angles
 		private final Slider[]    jointSliders = new Slider[6];
@@ -71,6 +88,7 @@ public class MainApp {
 
 		@Override
 		public void start(Stage stage) {
+			this.stage = stage;
 
 			// Fail fast if another instance is already running: try to claim the
 			// fixed control port before building any of the 3D scene.
@@ -78,7 +96,7 @@ public class MainApp {
 				httpServer = HttpServer.create(new InetSocketAddress(8500), 0);
 			} catch (IOException e) {
 				new Alert(AlertType.ERROR,
-						"Port 8500 is already in use -- another instance of the Meca500 "
+						"Port 8500 is already in use -- another instance of the robot "
 						+ "simulator may already be running. Close it and try again.",
 						ButtonType.OK).showAndWait();
 				Platform.exit();
@@ -91,9 +109,12 @@ public class MainApp {
 			// STLs are in STEP assembly frame (Y-up). Flip to JavaFX Y-down.
 			world.getTransforms().add(new Rotate(180, Rotate.Y_AXIS));
 
-			//robot = new Meca500();
-			robot = new UR10g1750();
-			world.getChildren().add(robot.getNode());
+			// Start with the robot picked last time (Meca500 on first run)
+			robotType = RobotType.fromName(prefs.get(PREF_ROBOT, null), RobotType.MECA500);
+			robot = robotType.create();
+			robotCache.put(robotType, robot);
+			robotHolder.getChildren().setAll(robot.getNode());
+			world.getChildren().add(robotHolder);
 
 			PointLight light = new PointLight();
 			light.setTranslateX(500);
@@ -105,7 +126,7 @@ public class MainApp {
 			PerspectiveCamera cam = new PerspectiveCamera(true);
 			cam.setNearClip(0.1);
 			cam.setFarClip(10000);
-			cam.setTranslateZ(-5000);
+			cam.setTranslateZ(-robot.getCameraDistance());
 
 			SubScene subScene = new SubScene(world, 800, 600, true, SceneAntialiasing.BALANCED);
 			subScene.setCamera(cam);
@@ -133,18 +154,19 @@ public class MainApp {
 
 			HBox bottomPanel = new HBox(8, jointCol, tcpCol);
 
-			// Initialise TCP fields from FK at zero angles (guard prevents spurious IK calls)
-			updatingFromCode = true;
-			TcpPose initPose = DHKinematics.computeTcpPose(robot.getDHParameters(), new double[6]);
-			applyTcpPoseToSliders(initPose);
-			updatingFromCode = false;
-
 			HBox zoomRow = buildZoomRow(cam);
+			HBox robotRow = buildRobotRow();
+			HBox.setHgrow(zoomRow, Priority.ALWAYS);
+			HBox bottomRow = new HBox(16, robotRow, zoomRow);
+			bottomRow.setAlignment(Pos.CENTER_LEFT);
+			bottomRow.setPadding(new Insets(4, 8, 8, 8));
 
-			VBox root = new VBox(overlay, bottomPanel, zoomRow);
+			// Size sliders for the robot and initialise TCP fields from FK
+			applyRobotToUi();
+
+			VBox root = new VBox(overlay, bottomPanel, bottomRow);
 			Scene scene = new Scene(root, 900, 800);
 
-			stage.setTitle("Meca500 Simulator");
 			for (String iconRes : new String[] {"/meca500-16.png", "/meca500-32.png", "/meca500-48.png", "/meca500-128.png", "/meca500-256.png"}) {
 				stage.getIcons().add(new Image(getClass().getResourceAsStream(iconRes)));
 			}
@@ -169,6 +191,7 @@ public class MainApp {
 		private VBox buildJointColumn() {
 			VBox col = new VBox(4);
 			col.getChildren().add(new Label("Joints"));
+			String[] labels = new String[] {"Base", "Shoulder", "Elbow", "Wrist 1", "Wrist 2", "Flange" };
 			for (int i = 0; i < 6; i++) {
 				int idx = i;
 
@@ -193,7 +216,7 @@ public class MainApp {
 
 				tf.setOnAction(e -> setSliderFromField(tf, s));
 
-				HBox row = new HBox(8, new Label("Joint " + (idx + 1)), s, tf);
+				HBox row = new HBox(8, new Label(labels[i]), s, tf);
 				HBox.setHgrow(s, Priority.ALWAYS);
 				col.getChildren().add(row);
 			}
@@ -205,6 +228,7 @@ public class MainApp {
 		// ------------------------------------------------------------------ //
 
 		private static final String[] TCP_LABELS = {"X (mm)", "Y (mm)", "Z (mm)", "Alpha °", "Beta °", "Gamma °"};
+		// X/Y/Z ranges here are placeholders; applyRobotToUi() resizes them per robot.
 		private static final double[] TCP_MIN    = {-300, -300, -600, -180,  -90, -180};
 		private static final double[] TCP_MAX    = { 300,  300,  600,  180,   90,  180};
 		private static final double[] TCP_TICK   = {  50,   50,   50,   30,   30,   30};
@@ -295,7 +319,7 @@ public class MainApp {
 
 		private HBox buildZoomRow(PerspectiveCamera cam) {
 			// Slider shows distance from the origin; camera sits at z = -distance.
-			Slider s = makeSlider(ZOOM_MIN, ZOOM_MAX, -cam.getTranslateZ(), 500, 4);
+			Slider s = zoomSlider = makeSlider(ZOOM_MIN, ZOOM_MAX, -cam.getTranslateZ(), 500, 4);
 			TextField tf = makeTextField();
 			tf.setText(String.format("%.0f", s.getValue()));
 
@@ -307,8 +331,96 @@ public class MainApp {
 			HBox row = new HBox(8, new Label("Zoom (camera distance, mm)"), s, tf);
 			HBox.setHgrow(s, Priority.ALWAYS);
 			row.setAlignment(Pos.CENTER_LEFT);
-			row.setPadding(new Insets(4, 8, 8, 8));
 			return row;
+		}
+
+		// ------------------------------------------------------------------ //
+		//  Robot selection                                                    //
+		// ------------------------------------------------------------------ //
+		private HBox buildRobotRow() {
+			robotCombo = new ComboBox<>();
+			robotCombo.getItems().setAll(RobotType.values());
+			robotCombo.setValue(robotType);
+			robotCombo.setOnAction(e -> {
+				RobotType picked = robotCombo.getValue();
+				if (picked != null && picked != robotType) switchRobot(picked);
+			});
+			robotLoadingLabel = new Label();
+
+			HBox row = new HBox(8, new Label("Robot"), robotCombo, robotLoadingLabel);
+			row.setAlignment(Pos.CENTER_LEFT);
+			return row;
+		}
+
+		/** Switches to another robot, loading its STLs in the background the first time. */
+		private void switchRobot(RobotType type) {
+			RobotModel cached = robotCache.get(type);
+			if (cached != null) {
+				showRobot(type, cached);
+				return;
+			}
+
+			robotCombo.setDisable(true);
+			robotLoadingLabel.setText("Loading " + type.getDisplayName() + "...");
+
+			Task<RobotModel> load = new Task<>() {
+				@Override protected RobotModel call() { return type.create(); }
+			};
+			load.setOnSucceeded(e -> {
+				robotCache.put(type, load.getValue());
+				showRobot(type, load.getValue());
+				robotLoadingLabel.setText("");
+				robotCombo.setDisable(false);
+			});
+			load.setOnFailed(e -> {
+				robotLoadingLabel.setText("");
+				robotCombo.setDisable(false);
+				robotCombo.setValue(robotType); // revert; equals current type so no switch is triggered
+				new Alert(AlertType.ERROR, "Could not load " + type.getDisplayName() + ": "
+						+ load.getException().getMessage(), ButtonType.OK).show();
+			});
+
+			Thread t = new Thread(load, "robot-loader");
+			t.setDaemon(true);
+			t.start();
+		}
+
+		/** Makes the given (already built) robot the active one. FX thread only. */
+		private void showRobot(RobotType type, RobotModel model) {
+			robotType = type;
+			robot = model;
+			robotHolder.getChildren().setAll(model.getNode());
+			controller.switchRobot(model);
+			applyRobotToUi();
+			zoomSlider.setValue(model.getCameraDistance());
+			prefs.put(PREF_ROBOT, type.name());
+		}
+
+		/** Sizes the joint/TCP sliders for the current robot and syncs them to its pose. */
+		private void applyRobotToUi() {
+			stage.setTitle(robotType.getDisplayName() + " Simulator");
+
+			updatingFromCode = true;
+			double[] jMin = robot.getJointMin();
+			double[] jMax = robot.getJointMax();
+			for (int i = 0; i < 6; i++) {
+				double lo = Math.max(-360, Math.toDegrees(jMin[i]));
+				double hi = Math.min( 360, Math.toDegrees(jMax[i]));
+				jointSliders[i].setMin(lo);
+				jointSliders[i].setMax(hi);
+				jointSliders[i].setMajorTickUnit(hi - lo > 360 ? 90 : 30);
+			}
+
+			double[] lim = robot.getTcpPositionLimits();
+			for (int i = 0; i < 3; i++) {
+				tcpSliders[i].setMin(-lim[i]);
+				tcpSliders[i].setMax(lim[i]);
+				tcpSliders[i].setMajorTickUnit(lim[i] > 600 ? 500 : 50);
+			}
+			updatingFromCode = false;
+
+			// Re-apply the robot's own pose (range changes above may have clamped slider values)
+			applyJointFrame(robot.getJointAngles());
 		}
 
 		private static Slider makeSlider(double min, double max, double val,

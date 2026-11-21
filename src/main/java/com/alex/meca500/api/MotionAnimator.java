@@ -107,6 +107,15 @@ final class MotionAnimator {
 		}
 	}
 
+	/** Abandons any active or paused move without calling its completion callback. */
+	void cancel() {
+		stopTimerOnly();
+		mode = Mode.NONE;
+		paused = false;
+		onDone = null;
+		frameSink = null;
+	}
+
 	private void startTimer(Runnable frameHandler) {
 		timer = new AnimationTimer() {
 			@Override public void handle(long now) { frameHandler.run(); }

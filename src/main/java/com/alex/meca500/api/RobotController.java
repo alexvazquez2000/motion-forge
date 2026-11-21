@@ -20,7 +20,7 @@ import com.alex.meca500.kinematics.TcpPose;
  */
 public final class RobotController {
 
-	private final KinematicsModel robot;
+	private volatile KinematicsModel robot;
 	private final MotionAnimator animator = new MotionAnimator();
 	private final Consumer<double[]> jointFrameSink;
 	private final Consumer<Boolean> connectionUiSink;
@@ -149,6 +149,18 @@ public final class RobotController {
 				moving.set(true);
 			}
 		});
+	}
+
+	/**
+	 * Swaps the robot being driven (e.g. when the user picks another robot in the UI).
+	 * Cancels any active or paused move. Must only be called on the FX thread.
+	 */
+	public void switchRobot(KinematicsModel newRobot) {
+		animator.cancel();
+		moving.set(false);
+		paused.set(false);
+		robot = newRobot;
+		anglesSnapshotRad.set(newRobot.getJointAngles());
 	}
 
 	/** Runs on the FX thread once per animation frame. */

@@ -2,7 +2,6 @@ package com.alex.meca500;
 
 import com.alex.meca500.MainApp.MainFxApp;
 import com.alex.meca500.kinematics.DHParameter;
-import com.alex.meca500.kinematics.KinematicsModel;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -27,7 +26,7 @@ import javafx.scene.shape.Sphere;
  *
  * @author Alex Vazquez <vazqueza2000@gmail.com>
  */
-public class UR10g1750 implements KinematicsModel {
+public class UR10g1750 implements RobotModel {
 
 	// Measured from the STEP joint axes (see convert_ur10_step_stl.py):
 	private static final double D1 = 218.6;   // base plane -> J2 axis
@@ -125,9 +124,17 @@ public class UR10g1750 implements KinematicsModel {
 		}
 	}
 
+	@Override
 	public Group getNode() {
 		return root;
 	}
+
+	@Override
+	public double getCameraDistance() { return 5000; }
+
+	// Fully stretched the flange is ~2.05 m from the base origin.
+	@Override
+	public double[] getTcpPositionLimits() { return new double[] { 2100, 2100, 2100 }; }
 
 	/** Sets joint i (0-based) in degrees and updates the visual model. */
 	public void setJoint(int i, double angle) {

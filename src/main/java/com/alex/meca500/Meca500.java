@@ -2,7 +2,6 @@ package com.alex.meca500;
 
 import com.alex.meca500.MainApp.MainFxApp;
 import com.alex.meca500.kinematics.DHParameter;
-import com.alex.meca500.kinematics.KinematicsModel;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Group;
@@ -22,7 +21,7 @@ import javafx.scene.transform.Rotate;
  *
  * @author Alex Vazquez <vazqueza2000@gmail.com>
  */
-public class Meca500 implements KinematicsModel {
+public class Meca500 implements RobotModel {
 
 	// Meca500 R3 standard DH parameters: a (mm), alpha (rad), d (mm), theta_offset (rad)
 	private static final DHParameter[] DH_PARAMS = {
@@ -113,9 +112,16 @@ public class Meca500 implements KinematicsModel {
 		}
 	}
 
+	@Override
 	public Group getNode() {
 		return root;
 	}
+
+	@Override
+	public double getCameraDistance() { return 1000; }
+
+	@Override
+	public double[] getTcpPositionLimits() { return new double[] { 300, 300, 600 }; }
 
 	/** Sets joint i (0-based) in degrees and updates the visual model. */
 	public void setJoint(int i, double angle) {
