@@ -14,9 +14,10 @@ import javafx.scene.shape.Sphere;
  * Universal Robots UR10g-1750 6-DOF arm — visual model and kinematics model.
  *
  * STLs are exported from the assembly STEP by src/main/python/convert_ur10_step_stl.py.
- * The STEP is Z-up; the export rotates it +90 deg about X, (x, y, z) -> (x, -z, y),
- * so the STLs use the same "up = -Y" convention as the Meca500 STLs.
- * Pivot coordinates below are in that exported STL frame (mm).
+ * The STEP is Z-up; the export rotates it -90 deg about X so the files are Y-up on disk,
+ * like the Meca500 STLs. StlMeshImporter then flips meshes on load, (x, y, z) -> (x, -y, -z),
+ * so in JavaFX a STEP point (x, y, z) sits at (x, -z, y): up = -Y.
+ * Pivot coordinates below are in that loaded frame (mm).
  *
  * Visual zero (all joints 0) is the CAD pose: arm pointing straight up.
  *
@@ -50,7 +51,7 @@ public class UR10g1750 implements KinematicsModel {
 	private static final double[] JOINT_MIN = { -LIM, -LIM, -LIM, -LIM, -LIM, -LIM };
 	private static final double[] JOINT_MAX = {  LIM,  LIM,  LIM,  LIM,  LIM,  LIM };
 
-	// Rotation axes in the exported STL frame. Each is the DH z-axis of that joint,
+	// Rotation axes in the loaded mesh frame. Each is the DH z-axis of that joint,
 	// so a positive visual rotation matches a positive kinematic rotation.
 	private static final Point3D AXIS_UP    = new Point3D(0, -1, 0); // J1, J5 (vertical in CAD pose)
 	private static final Point3D AXIS_SIDE  = new Point3D(0, 0, -1); // J2, J3, J4, J6
@@ -84,7 +85,7 @@ public class UR10g1750 implements KinematicsModel {
 
 		// --- Joint parameters: (axis, pivotX, pivotY, pivotZ) ---
 		// Exact values from the coaxial cylindrical faces in the STEP (not bounding-box estimates).
-		// Pivots are in the exported STL frame (mm, up = -Y).
+		// Pivots are in the loaded mesh frame (mm, up = -Y).
 		// For Y-axis joints only pivotX/pivotZ matter; for Z-axis joints only pivotX/pivotY matter.
 		configureJoint(parts[1], AXIS_UP,   0,     0,       0);       // J1 base
 		configureJoint(parts[2], AXIS_SIDE, 0,  -218.6f,    0);       // J2 shoulder

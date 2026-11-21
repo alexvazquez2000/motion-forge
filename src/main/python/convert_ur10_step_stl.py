@@ -9,9 +9,10 @@ import os
 # Exports the UR10g-1750 links from the ASSEMBLY STEP so every link shares one world frame.
 #
 # The UR STEP is Z-up (arm modeled pointing straight up, all joints at their visual zero).
-# The Meca500 STLs use "up = -Y", so every shape is rotated +90 deg about X before export:
-#     (x, y, z)  ->  (x, -z, y)
-# This keeps both robots in the same convention and needs no extra transform in JavaFX.
+# The Meca500 STLs are stored Y-up on disk, so every shape is rotated -90 deg about X before export:
+#     (x, y, z)  ->  (x, z, -y)
+# Note: the JavaFX StlMeshImporter flips meshes on load, (x, y, z) -> (x, -y, -z), so in JavaFX
+# the STEP point (x, y, z) ends up at (x, -z, y). Pivots in UR10g1750.java use that loaded frame.
 #
 # Joint axes found from the coaxial cylindrical faces between adjacent parts (STEP frame, mm):
 #     J1  Z axis through (x=0, y=0)           base      -> shoulder
@@ -20,7 +21,7 @@ import os
 #     J4  Y axis through (x=0, z=1832.4)      forearm   -> wrist 1
 #     J5  Z axis through (x=0, y=-182.44)     wrist 1   -> wrist 2
 #     J6  Y axis through (x=0, z=1968.5)      wrist 2   -> wrist 3 (flange face at y=-326.4)
-# After the export rotation these become the pivots used in UR10g1750.java.
+# In the loaded JavaFX frame these become the pivots used in UR10g1750.java.
 
 assembly_path = "C:/Users/alexv/workspace/meca500-sim/src/main/resources/UR10/UR10g-1750.step/UR10g-1750.step/Robot arm UR10g-1750.STEP"
 output_dir    = "C:/Users/alexv/workspace/meca500-sim/src/main/resources/UR10/"
@@ -52,7 +53,7 @@ for name, labels in links.items():
     bbox = None
     for label in labels:
         shape = by_label[label].Shape.copy()
-        shape.rotate(FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(1, 0, 0), 90)
+        shape.rotate(FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(1, 0, 0), -90)
         mesh.addMesh(Mesh.Mesh(shape.tessellate(TESSELLATION)))
         bbox = shape.BoundBox if bbox is None else bbox.united(shape.BoundBox)
         used.add(label)
