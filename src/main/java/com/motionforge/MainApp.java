@@ -1,4 +1,4 @@
-package com.alex.meca500;
+package com.motionforge;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -9,11 +9,11 @@ import java.util.prefs.Preferences;
 
 import com.sun.net.httpserver.HttpServer;
 
-import com.alex.meca500.api.RestApiServer;
-import com.alex.meca500.api.RobotController;
-import com.alex.meca500.kinematics.DHKinematics;
-import com.alex.meca500.kinematics.IKSolver;
-import com.alex.meca500.kinematics.TcpPose;
+import com.motionforge.api.RestApiServer;
+import com.motionforge.api.RobotController;
+import com.motionforge.kinematics.DHKinematics;
+import com.motionforge.kinematics.IKSolver;
+import com.motionforge.kinematics.TcpPose;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -96,8 +96,8 @@ public class MainApp {
 				httpServer = HttpServer.create(new InetSocketAddress(8500), 0);
 			} catch (IOException e) {
 				new Alert(AlertType.ERROR,
-						"Port 8500 is already in use -- another instance of the robot "
-						+ "simulator may already be running. Close it and try again.",
+						"Port 8500 is already in use -- another instance of Motion Forge "
+						+ "may already be running. Close it and try again.",
 						ButtonType.OK).showAndWait();
 				Platform.exit();
 				System.exit(1);
@@ -167,7 +167,7 @@ public class MainApp {
 			VBox root = new VBox(overlay, bottomPanel, bottomRow);
 			Scene scene = new Scene(root, 900, 800);
 
-			for (String iconRes : new String[] {"/meca500-16.png", "/meca500-32.png", "/meca500-48.png", "/meca500-128.png", "/meca500-256.png"}) {
+			for (String iconRes : new String[] {"/motion-forge-16.png", "/motion-forge-32.png", "/motion-forge-48.png", "/motion-forge-128.png", "/motion-forge-256.png"}) {
 				stage.getIcons().add(new Image(getClass().getResourceAsStream(iconRes)));
 			}
 
@@ -398,7 +398,7 @@ public class MainApp {
 
 		/** Sizes the joint/TCP sliders for the current robot and syncs them to its pose. */
 		private void applyRobotToUi() {
-			stage.setTitle(robotType.getDisplayName() + " Simulator");
+			stage.setTitle("Motion Forge - " + robotType.getDisplayName());
 
 			updatingFromCode = true;
 			double[] jMin = robot.getJointMin();

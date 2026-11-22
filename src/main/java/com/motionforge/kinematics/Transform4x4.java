@@ -1,4 +1,4 @@
-package com.alex.meca500.kinematics;
+package com.motionforge.kinematics;
 
 /**
  * Immutable 4x4 homogeneous transformation matrix.

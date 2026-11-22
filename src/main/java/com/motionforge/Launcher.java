@@ -1,4 +1,4 @@
-package com.alex.meca500;
+package com.motionforge;
 
 /**
  * This is the main program.  This is needed to avoid having to add the JavaFX module

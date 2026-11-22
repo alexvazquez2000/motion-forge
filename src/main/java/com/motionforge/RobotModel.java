@@ -1,6 +1,6 @@
-package com.alex.meca500;
+package com.motionforge;
 
-import com.alex.meca500.kinematics.KinematicsModel;
+import com.motionforge.kinematics.KinematicsModel;
 
 import javafx.scene.Group;
 

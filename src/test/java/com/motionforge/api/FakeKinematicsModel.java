@@ -1,7 +1,7 @@
-package com.alex.meca500.api;
+package com.motionforge.api;
 
-import com.alex.meca500.kinematics.DHParameter;
-import com.alex.meca500.kinematics.KinematicsModel;
+import com.motionforge.kinematics.DHParameter;
+import com.motionforge.kinematics.KinematicsModel;
 
 /** Minimal in-memory KinematicsModel for testing RobotController without JavaFX. */
 final class FakeKinematicsModel implements KinematicsModel {

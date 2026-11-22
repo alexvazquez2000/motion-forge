@@ -1,4 +1,4 @@
-package com.alex.meca500.kinematics;
+package com.motionforge.kinematics;
 
 /**
  * One row of a Denavit-Hartenberg table (standard/Craig convention).

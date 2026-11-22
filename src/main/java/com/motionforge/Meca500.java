@@ -1,7 +1,7 @@
-package com.alex.meca500;
+package com.motionforge;
 
-import com.alex.meca500.MainApp.MainFxApp;
-import com.alex.meca500.kinematics.DHParameter;
+import com.motionforge.MainApp.MainFxApp;
+import com.motionforge.kinematics.DHParameter;
 
 import javafx.geometry.Point3D;
 import javafx.scene.Group;

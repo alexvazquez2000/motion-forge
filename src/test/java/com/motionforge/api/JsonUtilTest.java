@@ -1,4 +1,4 @@
-package com.alex.meca500.api;
+package com.motionforge.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

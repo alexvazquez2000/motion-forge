@@ -1,4 +1,4 @@
-package com.alex.meca500.kinematics;
+package com.motionforge.kinematics;
 
 /**
  * End-effector pose: position (mm) and ZYX Euler angles (degrees).

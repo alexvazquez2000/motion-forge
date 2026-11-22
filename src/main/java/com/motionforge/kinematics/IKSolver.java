@@ -1,4 +1,4 @@
-package com.alex.meca500.kinematics;
+package com.motionforge.kinematics;
 
 /**
  * Numerical inverse kinematics via damped least squares (Levenberg-Marquardt).

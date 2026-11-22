@@ -1,4 +1,4 @@
-package com.alex.meca500;
+package com.motionforge;
 
 import java.util.function.Supplier;
 

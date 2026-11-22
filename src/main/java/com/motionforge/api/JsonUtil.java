@@ -1,4 +1,4 @@
-package com.alex.meca500.api;
+package com.motionforge.api;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.alex.meca500.kinematics;
+package com.motionforge.kinematics;
 
 /**
  * Stateless forward kinematics and geometric Jacobian for any DH-parameterised robot.

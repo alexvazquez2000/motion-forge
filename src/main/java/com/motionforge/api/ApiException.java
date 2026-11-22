@@ -1,4 +1,4 @@
-package com.alex.meca500.api;
+package com.motionforge.api;
 
 /**
  * Signals a REST-level failure that should be reported to the client with a

@@ -1,4 +1,4 @@
-package com.alex.meca500.api;
+package com.motionforge.api;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
-import com.alex.meca500.kinematics.TcpPose;
+import com.motionforge.kinematics.TcpPose;
 
 /**
  * Registers the REST control API's HTTP routes on a pre-bound HttpServer.

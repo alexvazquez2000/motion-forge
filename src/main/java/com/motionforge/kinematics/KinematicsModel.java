@@ -1,4 +1,4 @@
-package com.alex.meca500.kinematics;
+package com.motionforge.kinematics;
 
 /**
  * Robot-agnostic interface for a serial manipulator described by DH parameters.

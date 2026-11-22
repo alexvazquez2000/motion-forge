@@ -1,4 +1,4 @@
-package com.alex.meca500;
+package com.motionforge;
 
 import javafx.scene.shape.MeshView;
 import com.interactivemesh.jfx.importer.stl.StlMeshImporter;

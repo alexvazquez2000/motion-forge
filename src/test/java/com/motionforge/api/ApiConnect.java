@@ -1,4 +1,4 @@
-package com.alex.meca500.api;
+package com.motionforge.api;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;

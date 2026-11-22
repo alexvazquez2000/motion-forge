@@ -1,4 +1,4 @@
-package com.alex.meca500.api;
+package com.motionforge.api;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -6,9 +6,9 @@ import java.util.function.Consumer;
 
 import javafx.application.Platform;
 
-import com.alex.meca500.kinematics.DHKinematics;
-import com.alex.meca500.kinematics.KinematicsModel;
-import com.alex.meca500.kinematics.TcpPose;
+import com.motionforge.kinematics.DHKinematics;
+import com.motionforge.kinematics.KinematicsModel;
+import com.motionforge.kinematics.TcpPose;
 
 /**
  * Thread-safety boundary between REST/HTTP handler threads and the JavaFX
