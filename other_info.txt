@@ -1,5 +1,5 @@
 from PIL import Image
-  im = Image.open("src/main/resources/meca500.ico")
+  im = Image.open("src/main/resources/motion-forge.ico")
   print(im.info)
   print(im.size)
   sizes = im.info.get('sizes')
@@ -11,26 +11,26 @@ from PIL import Image
 
 ● Bash(python - <<'EOF'
   from PIL import Image
-  im = Image.open("src/main/resources/meca500.ico")
+  im = Image.open("src/main/resources/motion-forge.ico")
   for size in [(16,16),(32,32),(48,48),(128,128),(256,256)]:
-      Image.open("src/main/resources/meca500.ico")
-      frame = Image.open("src/main/resources/meca500.ico")
+      Image.open("src/main/resources/motion-forge.ico")
+      frame = Image.open("src/main/resources/motion-forge.ico")
       frame.size  # noop
-      img = Image.open("src/main/resources/meca500.ico")
+      img = Image.open("src/main/resources/motion-forge.ico")
       img_sized = img.copy()
       img_sized.size
       # Pillow lets you select a specific ico frame by reopening with size hint
-      img2 = Image.open("src/main/resources/meca500.ico")
+      img2 = Image.open("src/main/resources/motion-forge.ico")
       img2.load()
-      out = Image.open("src/main/resources/meca500.ico")
+      out = Image.open("src/main/resources/motion-forge.ico")
       out = out.resize(size) if out.size != size else out
-      fname = f"src/main/resources/meca500-{size[0]}.png"
+      fname = f"src/main/resources/motion-forge-{size[0]}.png"
       # Better: use ico's built-in per-size loading via 'size' kwarg on load
-      real = Image.open("src/main/resources/meca500.ico")
+      real = Image.open("src/main/resources/motion-forge.ico")
       real.load()
       frame_at_size = None
       try:
-          real2 = Image.open("src/main/resources/meca500.ico")
+          real2 = Image.open("src/main/resources/motion-forge.ico")
           real2.size = size
           real2.load()
           frame_at_size = real2
@@ -39,8 +39,8 @@ from PIL import Image
       frame_at_size.save(fname, format="PNG")
       print(fname, frame_at_size.size, frame_at_size.mode)
   EOF)
-src/main/resources/meca500-16.png (16, 16) RGBA
-src/main/resources/meca500-32.png (32, 32) RGBA
-src/main/resources/meca500-48.png (48, 48) RGBA
-src/main/resources/meca500-128.png (128, 128) RGBA
-src/main/resources/meca500-256.png (256, 256) RGBA
+src/main/resources/motion-forge-16.png (16, 16) RGBA
+src/main/resources/motion-forge-32.png (32, 32) RGBA
+src/main/resources/motion-forge-48.png (48, 48) RGBA
+src/main/resources/motion-forge-128.png (128, 128) RGBA
+src/main/resources/motion-forge-256.png (256, 256) RGBA

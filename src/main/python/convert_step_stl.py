@@ -9,8 +9,8 @@ import os
 # All STLs share the same world frame, so at zero-angle all meshes naturally sit in
 # the correct assembled position with no positional offsets needed in the simulator.
 
-assembly_path = "C:/Users/alexv/workspace/meca500-sim/src/main/resources/Meca500-CAD-model/Meca500 assembled in zero robot position.stp"
-output_dir    = "C:/Users/alexv/workspace/meca500-sim/src/main/resources/"
+assembly_path = "C:/Users/alexv/workspace/motion-forge/src/main/resources/Meca500/Meca500 assembled in zero robot position.stp"
+output_dir    = "C:/Users/alexv/workspace/motion-forge/src/main/resources/Meca500/"
 
 # Maps part index (after flattening the compound tree) to output filename.
 # part_07 is the mounting fixture — omitted intentionally.

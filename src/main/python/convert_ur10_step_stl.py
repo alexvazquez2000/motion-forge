@@ -23,8 +23,8 @@ import os
 #     J6  Y axis through (x=0, z=1968.5)      wrist 2   -> wrist 3 (flange face at y=-326.4)
 # In the loaded JavaFX frame these become the pivots used in UR10g1750.java.
 
-assembly_path = "C:/Users/alexv/workspace/meca500-sim/src/main/resources/UR10/UR10g-1750.step/UR10g-1750.step/Robot arm UR10g-1750.STEP"
-output_dir    = "C:/Users/alexv/workspace/meca500-sim/src/main/resources/UR10/"
+assembly_path = "C:/Users/alexv/workspace/motion-forge/src/main/resources/UR10/UR10g-1750.step/UR10g-1750.step/Robot arm UR10g-1750.STEP"
+output_dir    = "C:/Users/alexv/workspace/motion-forge/src/main/resources/UR10/"
 
 # Output file -> STEP part labels merged into it.
 # C-2011656 is the base cable connector (fixed to the base).
